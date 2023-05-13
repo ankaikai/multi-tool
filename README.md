@@ -1,18 +1,18 @@
-# ——— Multi-Tool Planner ———
+# ——————————— Multi-Tool Planner ———————————
 
 ### Includes:
-* Calendar,
-* To-Do List,
-* Weather Tracker.
+* Calendar
+* To-Do List
+* Weather Tracker
 
 ### FrontEnd Stack:
-* TypeScript,
-* React,
-* React-Redux,
-* ReactRouterDOM,
-* Axios,
+* TypeScript
+* React
+* React-Redux
+* ReactRouterDOM
+* Axios
 * TailWindCSS
 
 ### BackEnd Stack:
-* Laravel,
+* Laravel
 * MySQL
