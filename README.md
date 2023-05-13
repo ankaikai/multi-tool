@@ -1,4 +1,4 @@
-# ————————— Multi-Tool Planner —————————
+# ——————Multi-Tool Planner——————
 
 ### Includes:
 * Calendar
