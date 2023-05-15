@@ -10,10 +10,20 @@ interface Note {
 const CalendarTable: FC = () => {
     const [hoveredCell, setHoveredCell] = useState<string | null>(null);
     const [currentWeek, setCurrentWeek] = useState<number>(1);
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState<Date>(new Date());
     const [notes, setNotes] = useState<Note[]>([]);
+
 
     // TIME HANDLE
     //generate dates
+    useEffect(() => {
+        const today = new Date();
+        const firstDay = today.getDate() - today.getDay() + (7 * (currentWeek - 1));
+        const firstDayOfWeek = new Date(today.setDate(firstDay));
+        setFirstDayOfWeek(firstDayOfWeek);
+    }, [currentWeek]);
+
+
     const getFormattedDate = (dayOfWeek: number, dayOfMonth: number) => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
@@ -29,21 +39,20 @@ const CalendarTable: FC = () => {
     };
 
     // currents timing
-    const currentDay = new Date().getDay();
     const currentMonth: number = new Date().getMonth() + 1;
     const currentDayDate: number = new Date().getDate();
     const currentYear: number = new Date().getFullYear();
     const currentDate: string = `${currentMonth}/${currentDayDate}/${currentYear}`;
     //current time in 24-hour format
-    const currentTime : string = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", hour12: false});
+    const currentTime: string = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", hour12: false});
 
-    const DAYS_OF_WEEK: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const DAYS_OF_WEEK: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const HOURS_OF_DAY: string[] = Array.from({length: 24}, (_, i) => {
         const hour = ((i + 5) % 24).toString().padStart(2, '0');
         return `${hour}:00`;
     });
 
- // NOTES HANDLE
+    // NOTES HANDLE
     useEffect(() => {
         // Restoring Notes from the Cache when Component Load
         const cachedNotes = localStorage.getItem('calendarNotes');
@@ -113,20 +122,18 @@ const CalendarTable: FC = () => {
                                 <th
                                     key={dayOfWeek}
                                     className={`cursor-default w-32 ${
-                                        getFormattedDate(index, currentWeek * 7) === currentDate ? 'bg-emerald-500' : 'bg-purple-500'
+                                        getFormattedDate(index, currentWeek * 7 + 7) === currentDate ? 'bg-emerald-500' : 'bg-purple-500'
                                     }`}
                                 >
-                                    {dayOfWeek} {getFormattedDate(index, currentWeek * 7)} {/* Formatted Date */}
+                                    {dayOfWeek} {getFormattedDate(index, currentWeek * 7 + 7)} {/* Formatted Date */}
                                 </th>
                             ))}
                         </tr>
                         </thead>
-
                         {/*COLUMNS*/}
                         <tbody>
                         {/* Hours of day and calendar cells */}
                         {HOURS_OF_DAY.map((hour) => (
-
                             <tr key={hour}>
                                 {/* Hour column */}
                                 <td className="cursor-default w-20 text-right px-2">{hour}</td>
@@ -138,7 +145,10 @@ const CalendarTable: FC = () => {
                                     const nextHour = ((parseInt(hour) + 1) % 24).toString().padStart(2, '0');
                                     const cellEndTime = `${nextHour}:00`;
                                     const isCurrentTime = isTimeInRange(currentTime, cellTime, cellEndTime);
-                                    const isToday = cellIndex === currentDay && getFormattedDate(cellIndex, currentWeek * 7) === currentDate;
+                                    const isToday =
+                                        cellIndex === (firstDayOfWeek.getDay() + cellIndex) % 7 &&
+                                        getFormattedDate(cellIndex, currentWeek * 7) === currentDate;
+
                                     return (
                                         <td
                                             onMouseEnter={() => handleMouseEnter(`${hour}-${dayOfWeek}`)}
